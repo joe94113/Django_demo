@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <form action="/blog/comments" method="post">{% csrf_token %} <!--如果用post方式傳送，要加上csrf_token-->
+      <label for="comment">comment:</label><br>
+      <input type="text" id="comment" name="comment"><br>
+      <input type="submit" value="Submit">
+    </form>
+</body>
+</html>
