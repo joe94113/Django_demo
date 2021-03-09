@@ -1,4 +1,15 @@
 {% extends "base_generic.html" %}
 {% block content %}
-    <h1>Hi this is me~~</h1>
+    <h1>Hi this is {{ name }}</h1>
+{% endblock %}
+{% endblock }
+{% block sidebar %}
+{% load static %} <!--就可以直接呼叫static資料夾內的檔案-->
+<img src="{% static 'girl.jpg' %}">
+    <ul class="sidebar-nav">
+        <h1>Side bar has {{ sidebar|length }} elementa~</h1>
+        {% for bar in sidebar %} <!--使用for迴圈跑-->
+        <li><a href="">{{ bar }}</a></li>
+        {% endfor %}
+    </ul>
 {% endblock %}
