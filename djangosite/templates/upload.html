@@ -5,13 +5,12 @@
     <title>Title</title>
 </head>
 <body>
-    <form action="/blog/comments" method="post">{% csrf_token %} <!--如果用post方式傳送，要加上csrf_token-->
+    <form action="/blog/upload" method="POST" enctype="multipart/form-data">{% csrf_token %} <!--如果用post方式傳送，要加上csrf_token-->
       <!--
       <label for="content">comment:</label><br>
       <input type="text" id="content" name="content"><br>
       -->
         {{ form }}
-        <h1>I know you are {{ user }}</h1>
       <input type="submit" value="Submit">
     </form>
 </body>

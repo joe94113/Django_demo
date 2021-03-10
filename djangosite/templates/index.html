@@ -1,0 +1,21 @@
+{% extends "base_generic.html" %}
+{% block content %}
+
+{% if user.is_authenticated %}
+    <h1>Hi this is {{ user.username }}</h1>
+{% else %}
+    <h1>Your are not logged in~~</h1>
+{% endif %}
+{% endblock %}
+
+{% block sidebar %}
+{% load static %} <!--就可以直接呼叫static資料夾內的檔案-->
+    <form action="/blog/login" method="POST">{% csrf_token %} <!--安全性要加上csrf_token-->
+      <!--
+      <label for="content">comment:</label><br>
+      <input type="text" id="content" name="content"><br>
+      -->
+        {{ form }}
+      <input type="submit" value="Submit">
+    </form>
+{% endblock %}

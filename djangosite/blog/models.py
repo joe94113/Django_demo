@@ -28,3 +28,10 @@ def create_articles(content):
     user = auth_user.objects.get(username="joe")
     Articles.objects.create(user=user, content=content)
     return
+
+
+def get_articles_owenr():
+        # article = Articles.objects.get(id=1)
+        # user = article.user
+        # 可改成以下的code
+        user = Articles.objects.get(id=1).select_related("user")
