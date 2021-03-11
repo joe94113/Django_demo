@@ -21,4 +21,21 @@
     </tr>
     {% endfor %}
 </table>
+
+<div class="pagination">
+
+    {% if articles.has_previous %}
+        <a href="?page=1">First</a>
+        <a href="?page={{ posts.previous_page_number }}">Previous</a>
+    {% endif %}
+
+    <span>{{ articles.number }}</span>
+    <span>of</span>
+    <span>{{ articles.paginator.num_pages }}</span>
+
+    {% if articles.has_next %}
+        <a href="?page={{ articles.next_page_number }}">Next</a>
+        <a href="?page={{ articles.paginator.num_pages }}">Last</a>
+    {% endif %}
+</div>
 {% endblock %}

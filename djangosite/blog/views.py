@@ -9,11 +9,11 @@ from django.http import JsonResponse  # 可回傳json格式
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views.decorators.http import require_http_methods  # 限定http傳送方式
-from django.views.decorators.cache import cache_page
+from django.views.decorators.cache import cache_page  # 增加效能
 from django.contrib.auth import authenticate, login, logout
-from django.core.mail import send_mail
+from django.core.mail import send_mail  # 發送email
 from django.conf import settings  # 引入settings
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator  # 分頁套件
 from django.core.cache import cache
 
 from .models import create_user, create_articles, get_articles
@@ -79,6 +79,9 @@ def author(request):
     if not articles:
         articles = get_articles()
         cache.set("joe", articles, 30)
+
+    paginator = Paginator(articles, 2)
+    articles = paginator.get_page(request.GET["page"])
 
     context = {
         "name": "joe",

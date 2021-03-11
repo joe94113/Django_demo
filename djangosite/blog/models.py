@@ -34,7 +34,7 @@ def create_articles(content):
 
 def get_articles():
     user = auth_user.objects.get(username="joe")
-    return Articles.objects.filter(user=user).all()
+    return Articles.objects.filter(user=user).all().order_by("-last_updata")
 
 # def get_articles_owenr():
 #         # article = Articles.objects.get(id=1)
