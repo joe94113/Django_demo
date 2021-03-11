@@ -9,11 +9,38 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views.decorators.http import require_http_methods  # 限定http傳送方式
 from django.contrib.auth import authenticate, login, logout
+from django.core.mail import send_mail
+from django.conf import settings  # 引入settings
 
 from .models import create_user, create_articles
 from .form import Django_form
 from .upload import UploadFileForm
 from .login import Login_form
+
+
+def set_session(request):  # 設置session
+    request.session['pref'] = "C++"
+    response = HttpResponse("Session set!")
+    return response
+
+
+def get_session(request):  # 取得session
+    response = HttpResponse("Session set!"+str(request.session['pref']))
+    return response
+
+
+def get_cookies(request):  # 取得cookies
+    if "pref" in request.COOKIES:
+        print("pref:", request.COOKIES['pref'])
+        return HttpResponse("get cookies")
+    else:
+        return HttpResponse("get cookies failed")
+
+
+def cookies(request):  # 設定cookies
+    response = HttpResponse("Cookie set")
+    response.set_cookie("pref", "PYTHON")
+    return response
 
 
 # Create your views here.
@@ -90,3 +117,13 @@ def usr_login(request):
 def usr_logout(request):
     logout(request)
     return HttpResponse("logout successfully")
+
+
+def snd_mail(request):
+    send_mail(
+        'subject here',
+        'Here is the message',
+        settings.EMAIL_HOST_USER,
+        ['joe94113@gmail.com'],
+        fail_silently=False,
+    )

@@ -121,3 +121,11 @@ STATIC_URL = '/static/'
 STATIC_DIR = [
     os.path.join(BASE_DIR, "static")
 ]
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_USE_TLS = True  # 開啟TLS(傳輸層安全性)
+EMAIL_HOSTS = "smtp.gmail.com"  # SMTP伺服器
+EMAIL_PORT = 587  # TLS通訊埠號
+EMAIL_HOST_USER = 'a106510361@g2.usc.edu.tw'  # 寄件者電子郵件
+EMAIL_HOST_PASSWORD = '**********'  # Gmail應用程式密碼
+DEFAULT_FROM_EMAIL = ""
