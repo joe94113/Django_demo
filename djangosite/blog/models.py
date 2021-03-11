@@ -8,6 +8,8 @@ from django.contrib.auth.models import User as auth_user
 # python manage.py makemigrations blog
 # python manage.py migrate
 # 才可以順利創建資料表
+# 設定suprtuser指令
+# python manage.py createsuperuser
 class User(models.Model):
     firstName = models.CharField(max_length=50)
     lastName = models.CharField(max_length=50)
@@ -20,8 +22,8 @@ class Articles(models.Model):
 
 
 def create_user():
-    # User.objects.create(firstName="Joe", lastName="Wang")  # create
-    User.objects.filter(firstName="Joe", lastName="Wang").update(firstName="BigJOE")
+    User.objects.create(firstName="Joe", lastName="Wang")  # create
+    # User.objects.filter(firstName="Joe", lastName="Wang")
 
 
 def create_articles(content):
@@ -30,8 +32,12 @@ def create_articles(content):
     return
 
 
-def get_articles_owenr():
-        # article = Articles.objects.get(id=1)
-        # user = article.user
-        # 可改成以下的code
-        user = Articles.objects.get(id=1).select_related("user")
+def get_articles():
+    user = auth_user.objects.get(username="joe")
+    return Articles.objects.filter(user=user).all()
+
+# def get_articles_owenr():
+#         # article = Articles.objects.get(id=1)
+#         # user = article.user
+#         # 可改成以下的code
+#         user = Articles.objects.get(id=1).select_related("user")

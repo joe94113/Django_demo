@@ -22,9 +22,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = '(hgfe_7sk=kjrup+vvg@nfjwct@j48ly#*z(d_q32fx9em3zjz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True  # 部屬的時候要設成False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']  # 設定限定IP可瀏覽你的網站
 
 # Application definition
 
@@ -129,3 +129,35 @@ EMAIL_PORT = 587  # TLS通訊埠號
 EMAIL_HOST_USER = 'a106510361@g2.usc.edu.tw'  # 寄件者電子郵件
 EMAIL_HOST_PASSWORD = '**********'  # Gmail應用程式密碼
 DEFAULT_FROM_EMAIL = ""
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+        'LOCATION': '127.0.0.1:11211',
+    }
+}
+
+LOGGING = {
+    'version': 1,
+    'handlers': {
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'debug.log',
+            'formatter': 'format_demo'
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+    'formatters': {
+        'format_demo': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:} {message}',
+            'style': '{',
+        },
+    },
+}

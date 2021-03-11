@@ -1,4 +1,5 @@
 import os
+import logging
 
 from django.shortcuts import render
 from django.http import HttpResponse
@@ -8,14 +9,19 @@ from django.http import JsonResponse  # 可回傳json格式
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views.decorators.http import require_http_methods  # 限定http傳送方式
+from django.views.decorators.cache import cache_page
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.conf import settings  # 引入settings
+from django.core.paginator import Paginator
+from django.core.cache import cache
 
-from .models import create_user, create_articles
+from .models import create_user, create_articles, get_articles
 from .form import Django_form
 from .upload import UploadFileForm
 from .login import Login_form
+
+logger = logging.getLogger('django')
 
 
 def set_session(request):  # 設置session
@@ -25,7 +31,7 @@ def set_session(request):  # 設置session
 
 
 def get_session(request):  # 取得session
-    response = HttpResponse("Session set!"+str(request.session['pref']))
+    response = HttpResponse("Session set!" + str(request.session['pref']))
     return response
 
 
@@ -45,7 +51,6 @@ def cookies(request):  # 設定cookies
 
 # Create your views here.
 def index(request):
-    
     return render(request, "index.html", {"form": Login_form})
 
 
@@ -64,17 +69,24 @@ def articles(request, a_num):
     if request.user.is_authenticated:
         context = {"form": form, "user": request.user.username}
     else:
-        context = {"form":form, "user":""}
+        context = {"form": form, "user": ""}
     return render(request, "articles.html", context)
 
 
+@cache_page(60 * 15)
 def author(request):
+    articles = cache.get("joe")  # key
+    if not articles:
+        articles = get_articles()
+        cache.set("joe", articles, 30)
+
     context = {
-        "name": "Joe",
+        "name": "joe",
         "sidebar": ["Home", "Articles", "Authors"],
+        "articles": articles,
     }
     return render(request, "author.html", context)
-    # return redirect("articles")
+    # return redirect('articles')
 
 
 def create(request):
