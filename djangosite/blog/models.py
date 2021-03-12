@@ -26,10 +26,10 @@ class Tag(models.Model):
 
 class Articles(models.Model):
     user = models.ForeignKey(auth_user, on_delete=models.CASCADE)  # 如果文章作者被刪除，但他有發文章會error
-    title = models.CharField(max_length=500, blank=False, null=False, default="", editable=False)
+    title = models.CharField(max_length=500, blank=False, null=False)
     content = models.CharField(max_length=500, blank=False, null=False)  # 文章不可為空
     last_updata = models.DateField(auto_now=True)
-    tag = models.ManyToManyField(
+    tags = models.ManyToManyField(
         Tag,
         related_name="article_related_tags"
     )
@@ -43,10 +43,24 @@ def _create_articles(request):
     return
 
 
+def _edit_articles_by_id(request, id):
+    Articles.objects.filter(id=id).update(title=request.POST['title'],
+                                          content=request.POST['content'])  # 利用id找到要修改文章，運用update函式修改資料
+    a = Articles.objects.filter(id=id).get()
+    a.tags.remove()  # Remove all of the previous tags
+    query = dict(request.POST)
+    for i in query['tags']:
+        a.tags.add(Tag.objects.get(id=i))  # Update the new tags
+    return
+
+
 def _get_articles():
     user = auth_user.objects.get(username="joe")
     return Articles.objects.filter(user=user).all().order_by("-last_updata")
 
+
+def _get_articles_by_id(id):
+    return Articles.objects.filter(id=id).first()
 # def get_articles_owenr():
 #         # article = Articles.objects.get(id=1)
 #         # user = article.user

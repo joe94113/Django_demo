@@ -11,16 +11,16 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views.decorators.http import require_http_methods  # 限定http傳送方式
 from django.views.decorators.cache import cache_page  # 增加效能
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.core.mail import send_mail  # 發送email
 from django.conf import settings  # 引入settings
 from django.core.paginator import Paginator  # 分頁套件
 from django.core.cache import cache
 
-from .models import _create_articles, _get_articles
+from .models import _create_articles, _get_articles, _get_articles_by_id, _edit_articles_by_id
 from .form import Django_form
 from .upload import UploadFileForm
-from .create_articles import create_articles_form
+from .create_articles import create_articles_form, edit_articles_form
 from .login import Login_form
 
 logger = logging.getLogger('django')
@@ -52,13 +52,13 @@ logger = logging.getLogger('django')
 
 
 # Create your views here.
-def index(request):
+def index(request):  # 主畫面
     articles = _get_articles()
     content = {"articles": articles}
     return render(request, "index.html", content)
 
 
-def create_article(request):
+def create_article(request):  # 新增貼文
     if request.method == "POST":
         _create_articles(request)
         return redirect("index")
@@ -69,21 +69,9 @@ def create_article(request):
 
 
 def login(request):
-    return render(request, "login.html")
-
-
-@require_http_methods(["POST"])
-def comments(request):
-    # Save comments
-    d_form = Django_form(request.POST)
-    if d_form.is_valid():
-        print("from is ok")
-    else:
-        print("form is bad")
-
-    content = request.POST.get("content")  # 對應articles.html的input name
-    _create_articles(content)
-    return HttpResponse("Comments updated!")
+    if not request.user.is_authenticated:
+        return render(request, 'login.html')
+    return redirect("index")
 
 
 def articles(request, a_num):
@@ -115,9 +103,24 @@ def author(request):
     # return redirect('articles')
 
 
-def create(request):
-    create_user()
-    return HttpResponse("User created")
+def view_article(request, a_id):  # 遊覽貼文
+    context = {"article": _get_articles_by_id(a_id)}
+    return render(request, "show_articles.html", context)
+
+
+# def create(request):
+#     create_user()
+#     return HttpResponse("User created")
+
+
+def edit_article(request, id):  # 修改貼文
+    if request.method == 'POST':
+        _edit_articles_by_id(request, id)
+        return redirect("index")
+    else:
+        form = edit_articles_form(id)
+        context = {"form": form, "id": id}
+        return render(request, "edit_articles.html", context)
 
 
 def upload_file(request):  # 上傳檔案
@@ -144,19 +147,17 @@ def download_file(request):
 
 
 def usr_login(request):
-    # Session.objects.all().delete()
-    user = authenticate(request, username=request.POST["username"], password=request.POST["password"])
+    user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
     if user is not None:
-        form = Django_form()
-        context = {"form": form, "user": ""}
-        return render(request, "articles.html", context)
+        auth_login(request, user)
+        return redirect('index')
     else:
-        return render(request, "login.html")
+        return redirect('usr_login')
 
 
 def usr_logout(request):
-    logout(request)
-    return HttpResponse("logout successfully")
+    auth_logout(request)
+    return redirect('index')
 
 
 def snd_mail(request):
