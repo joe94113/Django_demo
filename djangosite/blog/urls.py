@@ -5,6 +5,7 @@ urlpatterns = [
     path("", views.index, name="index"),  # 把這條路徑命名為index，呼叫views.py的index函式
     path("articles/<int:a_id>", views.view_article, name="articles"),
     path("articles/edit/<int:a_id>", views.edit_article, name="edit_articles"),
+    path("articles/delete/<int:id>", views.delete_article, name="delete_article"),
     path("author", views.author, name="author"),
     path("articles/create", views.create_article, name="create_articles"),
     path("signin", views.login, name="login"),

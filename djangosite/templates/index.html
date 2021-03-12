@@ -61,9 +61,11 @@
                         <button type="button" class="btn btn-sm btn-outline-secondary" onclick="javascript:location.href='/blog/articles/{{ a.id }}'">View</button>
                         {% if a.user == user %}
                           <button type="button" class="btn btn-sm btn-outline-secondary" onclick="javascript:location.href='/blog/articles/edit/{{ a.id }}'">Edit</button>
+                        <!--提交id名為article-del-form的表格-->
                           <button type="button" class="btn btn-sm btn-outline-secondary" onclick="document.getElementById('article-del-form').submit();">Delete</button>
                         {% endif %}
                       </div>
+                      <!--用post方式取得文章id-->
                       <form id="article-del-form" method="post" action="/blog/articles/delete/{{ a.id }}">{% csrf_token %}
                         <input type="hidden" name="id" value="{{ a.id }}">
                       </form>

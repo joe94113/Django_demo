@@ -17,7 +17,7 @@ from django.conf import settings  # 引入settings
 from django.core.paginator import Paginator  # 分頁套件
 from django.core.cache import cache
 
-from .models import _create_articles, _get_articles, _get_articles_by_id, _edit_articles_by_id
+from .models import _create_articles, _get_articles, _get_articles_by_id, _edit_articles_by_id, _del_article_by_id
 from .form import Django_form
 from .upload import UploadFileForm
 from .create_articles import create_articles_form, edit_articles_form
@@ -121,6 +121,11 @@ def edit_article(request, a_id):  # 修改貼文
         form = edit_articles_form(a_id)
         context = {"form": form, "id": a_id}
         return render(request, "edit_articles.html", context)
+
+
+def delete_article(request, id):
+    _del_article_by_id(id)
+    return redirect("index")  # 返回view index function
 
 
 def upload_file(request):  # 上傳檔案

@@ -54,6 +54,11 @@ def _edit_articles_by_id(request, id):
     return
 
 
+def _del_article_by_id(id):
+    Articles.objects.filter(id=id).delete()
+    return
+
+
 def _get_articles():
     user = auth_user.objects.get(username="joe")
     return Articles.objects.filter(user=user).all().order_by("-last_updata")
