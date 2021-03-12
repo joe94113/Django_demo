@@ -4,6 +4,7 @@ from .models import Tag, Articles
 
 class edit_articles_form(forms.Form):
     def __init__(self, id):  # 設至初始值
+        # super(edit_articles_form,self)首先找到edit_articles_form的父類（就是類forms.Form），然後把類edit_articles_form的對象轉換為類forms.Form的對象
         super(edit_articles_form, self).__init__()
         self.fields['title'].initial = Articles.objects.filter(id=id)[0].title
         self.fields['content'].initial = Articles.objects.filter(id=id)[0].content

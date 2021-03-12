@@ -113,13 +113,13 @@ def view_article(request, a_id):  # 遊覽貼文
 #     return HttpResponse("User created")
 
 
-def edit_article(request, id):  # 修改貼文
+def edit_article(request, a_id):  # 修改貼文
     if request.method == 'POST':
-        _edit_articles_by_id(request, id)
+        _edit_articles_by_id(request, a_id)
         return redirect("index")
     else:
-        form = edit_articles_form(id)
-        context = {"form": form, "id": id}
+        form = edit_articles_form(a_id)
+        context = {"form": form, "id": a_id}
         return render(request, "edit_articles.html", context)
 
 
