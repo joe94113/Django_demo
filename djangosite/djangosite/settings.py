@@ -100,6 +100,11 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'blog.authentication.EmailAuthBackend',
+]
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
@@ -121,6 +126,9 @@ STATIC_URL = '/static/'
 STATIC_DIR = [
     os.path.join(BASE_DIR, "static")
 ]
+
+# 指令python manage.py collectstatic
+STATIC_ROOT = os.path.join(BASE_DIR, "static_all")
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_USE_TLS = True  # 開啟TLS(傳輸層安全性)

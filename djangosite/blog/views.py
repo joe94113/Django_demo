@@ -1,6 +1,7 @@
 import os
 import logging
 
+from django.contrib.sessions.models import Session
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.http import request
@@ -16,51 +17,73 @@ from django.conf import settings  # 引入settings
 from django.core.paginator import Paginator  # 分頁套件
 from django.core.cache import cache
 
-from .models import create_user, create_articles, get_articles
+from .models import _create_articles, _get_articles
 from .form import Django_form
 from .upload import UploadFileForm
+from .create_articles import create_articles_form
 from .login import Login_form
 
 logger = logging.getLogger('django')
 
 
-def set_session(request):  # 設置session
-    request.session['pref'] = "C++"
-    response = HttpResponse("Session set!")
-    return response
-
-
-def get_session(request):  # 取得session
-    response = HttpResponse("Session set!" + str(request.session['pref']))
-    return response
-
-
-def get_cookies(request):  # 取得cookies
-    if "pref" in request.COOKIES:
-        print("pref:", request.COOKIES['pref'])
-        return HttpResponse("get cookies")
-    else:
-        return HttpResponse("get cookies failed")
-
-
-def cookies(request):  # 設定cookies
-    response = HttpResponse("Cookie set")
-    response.set_cookie("pref", "PYTHON")
-    return response
+# def set_session(request):  # 設置session
+#     request.session['pref'] = "C++"
+#     response = HttpResponse("Session set!")
+#     return response
+#
+#
+# def get_session(request):  # 取得session
+#     response = HttpResponse("Session set!" + str(request.session['pref']))
+#     return response
+#
+#
+# def get_cookies(request):  # 取得cookies
+#     if "pref" in request.COOKIES:
+#         print("pref:", request.COOKIES['pref'])
+#         return HttpResponse("get cookies")
+#     else:
+#         return HttpResponse("get cookies failed")
+#
+#
+# def cookies(request):  # 設定cookies
+#     response = HttpResponse("Cookie set")
+#     response.set_cookie("pref", "PYTHON")
+#     return response
 
 
 # Create your views here.
 def index(request):
-    return render(request, "index.html", {"form": Login_form})
+    articles = _get_articles()
+    content = {"articles": articles}
+    return render(request, "index.html", content)
+
+
+def create_article(request):
+    if request.method == "POST":
+        _create_articles(request)
+        return redirect("index")
+    else:
+        form = create_articles_form
+        context = {"form": form, "user": ""}
+        return render(request, "create_articles.html", context)
+
+
+def login(request):
+    return render(request, "login.html")
 
 
 @require_http_methods(["POST"])
 def comments(request):
     # Save comments
+    d_form = Django_form(request.POST)
+    if d_form.is_valid():
+        print("from is ok")
+    else:
+        print("form is bad")
+
     content = request.POST.get("content")  # 對應articles.html的input name
-    create_articles(content)
+    _create_articles(content)
     return HttpResponse("Comments updated!")
-    # return JsonResponse({"one": "1", "two": [2, 2]})
 
 
 def articles(request, a_num):
@@ -77,7 +100,7 @@ def articles(request, a_num):
 def author(request):
     articles = cache.get("joe")  # key
     if not articles:
-        articles = get_articles()
+        articles = _get_articles()
         cache.set("joe", articles, 30)
 
     paginator = Paginator(articles, 2)
@@ -121,12 +144,14 @@ def download_file(request):
 
 
 def usr_login(request):
+    # Session.objects.all().delete()
     user = authenticate(request, username=request.POST["username"], password=request.POST["password"])
     if user is not None:
-        login(request, user)
-        return HttpResponse("LOGIN SUCCESSFUL :)")
+        form = Django_form()
+        context = {"form": form, "user": ""}
+        return render(request, "articles.html", context)
     else:
-        return HttpResponse("LOGIN FAILED QAQ")
+        return render(request, "login.html")
 
 
 def usr_logout(request):

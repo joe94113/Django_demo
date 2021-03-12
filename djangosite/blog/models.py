@@ -15,24 +15,35 @@ class User(models.Model):
     lastName = models.CharField(max_length=50)
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(max_length=500)
+
+    # 在前端才會顯示名稱
+    def __str__(self):
+        return self.name
+
+
 class Articles(models.Model):
     user = models.ForeignKey(auth_user, on_delete=models.CASCADE)  # 如果文章作者被刪除，但他有發文章會error
-    content = models.CharField(max_length=50, blank=False, null=False)  # 文章不可為空
+    title = models.CharField(max_length=500, blank=False, null=False, default="", editable=False)
+    content = models.CharField(max_length=500, blank=False, null=False)  # 文章不可為空
     last_updata = models.DateField(auto_now=True)
+    tag = models.ManyToManyField(
+        Tag,
+        related_name="article_related_tags"
+    )
 
 
-def create_user():
-    User.objects.create(firstName="Joe", lastName="Wang")  # create
-    # User.objects.filter(firstName="Joe", lastName="Wang")
-
-
-def create_articles(content):
-    user = auth_user.objects.get(username="joe")
-    Articles.objects.create(user=user, content=content)
+def _create_articles(request):
+    a = Articles.objects.create(user=request.user, title=request.POST['title'], content=request.POST['content'])
+    query = dict(request.POST)
+    for i in query['tags']:
+        a.tags.add(Tag.objects.get(id=i))
     return
 
 
-def get_articles():
+def _get_articles():
     user = auth_user.objects.get(username="joe")
     return Articles.objects.filter(user=user).all().order_by("-last_updata")
 
