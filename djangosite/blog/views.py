@@ -23,8 +23,19 @@ from .upload import UploadFileForm
 from .create_articles import create_articles_form, edit_articles_form
 from .login import Login_form
 
-logger = logging.getLogger('django')
+# chat
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseForbidden
+from django.contrib.auth.decorators import login_required
 
+
+# chat
+@login_required
+def course_chat_room(request):
+    return render(request, 'chat/room.html')
+
+
+logger = logging.getLogger('django')
 
 # def set_session(request):  # 設置session
 #     request.session['pref'] = "C++"

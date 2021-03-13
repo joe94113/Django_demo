@@ -11,6 +11,7 @@ urlpatterns = [
     path("signin", views.login, name="login"),
     path("login", views.usr_login, name="login"),
     path("logout", views.usr_logout, name="logout"),
+    path('chat',views.course_chat_room, name="chat"),
     # path("cookies", views.cookies, name="cookies"),
     # path("get_cookies", views.get_cookies, name="get_cookies"),
     # path("get_session", views.get_session, name="get_session"),
